@@ -1,0 +1,25 @@
+---
+- name: Install PHP 8 with required modules
+  hosts: all
+  become: yes
+  tasks:
+    - name: Add PPA repository for PHP 8
+      apt_repository:
+        repo: ppa:ondrej/php
+    - name: Install PHP 8 and required modules
+      apt:
+        name:
+          - php8.0
+          - php8.0-fpm
+          - php8.0-gd
+          - php8.0-mbstring
+          - php8.0-mysql
+          - php8.0-opcache
+          - php8.0-zip
+        state: present
+    - name: Set default PHP version
+      command: update-alternatives --set php /usr/bin/php7.2
+    - name: Restart PHP 8 FPM
+      service:
+        name: php8.0-fpm
+        state: restarted
