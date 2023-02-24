@@ -1,0 +1,12 @@
+#the inventoy file will contain the list of hosts
+
+[hr]
+192.168.56.13
+192.168.56.14
+
+[sales]
+192.168.56.15
+192.168.56.16
+
+[admin:children]
+hr
