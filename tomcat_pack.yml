@@ -1,0 +1,50 @@
+---
+- name: install tomcat server
+  hosts: all
+  vars_files:
+    - "/home/devops/web/vars.yml"
+  tasks:
+    - name: install {{ var1 }}
+      yum:
+        name: "{{ var1 }}"
+        state: latest
+    
+    - name: Get the current port
+      shell: cat {{ tom_cf }} | grep 'Connector port='
+      register: current_port
+      
+    - name: display current port
+      debug:
+        msg: "The current port is {{ current_port.stdout | trim }}"
+
+    - name : Edit Tomcat Config file
+      lineinfile:
+        path: " tom_cf "
+        regexp: 'connector port=.*'
+        line: ' <Connector port="{{ new_port }}" protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="8443" />'
+      when: current_port.stdout != "Connector port=' new_port '" 
+
+    - name: copy index page to tomcat location
+      copy:    
+        src: " file1 "
+        dest: " tom_h "
+
+    - name: start tomcat
+      systemd:
+        name: "{{ var1 }}"
+        state: started
+        enabled: true
+
+
+
+#### vars. yml
+
+var1: tomcat
+
+new_port: 5005
+tom_h: /usr/share/tomcat/webapps
+tom_cf: /usr/share/tomcat/conf/server.xml
+
+file1: /home/devops/web/Desktop/file1.html
